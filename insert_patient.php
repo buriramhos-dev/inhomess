@@ -7,14 +7,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// รับข้อมูลจาก form
+// รับข้อมูลจาก form และแปลง integer fields
+$age_y = isset($_POST['age_y']) && $_POST['age_y'] !== '' ? $_POST['age_y'] : '';
+$age_m = isset($_POST['age_m']) && $_POST['age_m'] !== '' ? $_POST['age_m'] : '';
+
 $data = [
     'no' => $_POST['no'] ?? '',
     'visit_date' => $_POST['visit_date'] ?? '',
     'hn' => trim($_POST['hn'] ?? ''),
     'fullname' => trim($_POST['fullname'] ?? ''),
-    'age_y' => $_POST['age_y'] ?? '',
-    'age_m' => $_POST['age_m'] ?? '',
+    'age_y' => $age_y,
+    'age_m' => $age_m,
     'gender' => $_POST['gender'] ?? '',
     'gender_note' => $_POST['gender_note'] ?? '',
     'address_no' => $_POST['address_no'] ?? '',

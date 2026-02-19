@@ -269,20 +269,43 @@ function db_insert_patient(array $data): bool {
         return false;
     }
 
-    // normalize values to strings
+    // แปลง age_y และ age_m เป็น integer หรือ 0 (สำหรับค่าว่าง)
+    // ใช้ 0 แทน NULL เพื่อหลีกเลี่ยงปัญหา bind_param กับ empty string
+    $age_y_val = $data['age_y'] ?? '';
+    $age_m_val = $data['age_m'] ?? '';
+    
+    // แปลงเป็น integer ถ้ามีค่า และไม่ใช่ empty string
+    $age_y = ($age_y_val !== '' && $age_y_val !== null && is_numeric($age_y_val)) 
+        ? (int)$age_y_val : 0;
+    $age_m = ($age_m_val !== '' && $age_m_val !== null && is_numeric($age_m_val)) 
+        ? (int)$age_m_val : 0;
+    
+    // แปลง consultation และ boolean fields เป็น integer หรือ 0
+    $consultation = isset($data['consultation']) && $data['consultation'] !== '' ? (int)$data['consultation'] : 0;
+    $consult_yes = isset($data['consult_yes']) && $data['consult_yes'] !== '' ? (int)$data['consult_yes'] : 0;
+    $consult_no = isset($data['consult_no']) && $data['consult_no'] !== '' ? (int)$data['consult_no'] : 0;
+    $medicine_yes = isset($data['medicine_yes']) && $data['medicine_yes'] !== '' ? (int)$data['medicine_yes'] : 0;
+    $medicine_no = isset($data['medicine_no']) && $data['medicine_no'] !== '' ? (int)$data['medicine_no'] : 0;
+    
+    // normalize values
     $params = [
         $data['no'] ?? '', $data['visit_date'] ?? '', $data['hn'] ?? '', $data['fullname'] ?? '',
-        (string)($data['age_y'] ?? ''), (string)($data['age_m'] ?? ''), $data['gender'] ?? '', $data['gender_note'] ?? '',
+        $age_y, $age_m, $data['gender'] ?? '', $data['gender_note'] ?? '',
         $data['address_no'] ?? '', $data['address_moo'] ?? '', $data['address_tambon'] ?? '', $data['address_amphur'] ?? '', $data['address_province'] ?? '',
         $data['live_with'] ?? '', $data['residence_type'] ?? '', 
         $data['pre_visit_illness'] ?? '', $data['is_imc'] ?? '', $data['visit_reason'] ?? '', $data['symptoms_found'] ?? '',
         $medical_equipment_str, $data['problems_found'] ?? '', $data['solution'] ?? '',
-        $data['consultation'] ?? '', $data['no_consultation'] ?? '', $data['imc'] ?? '', $data['health_note'] ?? '',
-        $data['consult_yes'] ?? '', $data['consult_no'] ?? '', $data['medicine_yes'] ?? '', $data['medicine_no'] ?? '', $data['wc_info'] ?? '', $data['general_note'] ?? ''
+        $consultation, $data['no_consultation'] ?? '', $data['imc'] ?? '', $data['health_note'] ?? '',
+        $consult_yes, $consult_no, $medicine_yes, $medicine_no, $data['wc_info'] ?? '', $data['general_note'] ?? ''
     ];
 
-    // bind as strings
-    $types = str_repeat('s', count($params));
+    // bind types: s=string, i=integer, d=double
+    // no, visit_date, hn, fullname, age_y, age_m, gender, gender_note,
+    // address_no, address_moo, address_tambon, address_amphur, address_province,
+    // live_with, residence_type, pre_visit_illness, is_imc, visit_reason, symptoms_found,
+    // medical_equipment, problems_found, solution, consultation, no_consultation, imc, health_note,
+    // consult_yes, consult_no, medicine_yes, medicine_no, wc_info, general_note
+    $types = 'ssssiissssssssssssssssssssiiisss';
 
     $stmt->bind_param($types, ...$params);
     $res = $stmt->execute();
