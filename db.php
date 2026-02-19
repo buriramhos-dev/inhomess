@@ -6,7 +6,7 @@ $DB_HOST = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost';
 $DB_PORT = getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '';
 $DB_USER = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
 $DB_PASS = getenv('MYSQLPASSWORD') ?: getenv('DB_PASS') ?: '';
-$DB_NAME = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'doctorvisit';
+$DB_NAME = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'railway';
 
 // เชื่อมต่อ MySQL (ยังไม่เลือก database)
 // หากกำหนด DB_PORT จะใช้พอร์ตนั้นเป็นตัวเชื่อมต่อ
