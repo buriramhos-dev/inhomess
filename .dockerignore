@@ -1,0 +1,13 @@
+.git
+node_modules
+vendor
+.env
+*.sql
+.vscode
+/.idea
+/.gitignore
+/.DS_Store
+tests
+README.md
+db/
+*.md
