@@ -105,15 +105,8 @@ if ($search_query !== '' && !empty($patients)) {
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-
-        .header-dashboard {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            gap: 15px;
             justify-content: flex-end;
-            padding-left: 1150px;
         }
 
 
@@ -608,20 +601,17 @@ if ($search_query !== '' && !empty($patients)) {
             <header class="main-header">
                 <h1>ข้อมูลผู้ป่วย</h1>
 
-                <div class="header-dashboard">
+                <div class="header-actions">
                     <a href="dashboard.php" class="btn-add-container">
                         <button class="btn-add-patient">
                             <span class="plus-icon">📊</span> Dashboard
                         </button>
                     </a>
-                </div>
-                <div class="header-actions">
                     <a href="add.php" class="btn-add-container">
                         <button class="btn-add-patient">
                             <span class="plus-icon">+</span> เพิ่มข้อมูลผู้ป่วย
                         </button>
                     </a>
-
                 </div>
             </header>
 
