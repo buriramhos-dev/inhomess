@@ -163,10 +163,49 @@ function db_init_tables() {
       KEY `idx_assess_date` (`assess_date`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     
-    // ลบ foreign keys ถ้ามี (เพื่อหลีกเลี่ยงปัญหา constraint)
-    $mysqli->query("ALTER TABLE `inhomess_assessments` DROP FOREIGN KEY IF EXISTS `fk_inhomess_visit`");
-    $mysqli->query("ALTER TABLE `inhomess_assessments` DROP FOREIGN KEY IF EXISTS `fk_inhomess_patient`");
+function dropForeignKeyIfExists($mysqli, $table, $fkName) {
+    // ตรวจสอบว่าตารางมีอยู่จริงหรือไม่
+    $tableCheck = $mysqli->query("SHOW TABLES LIKE '$table'");
+    if (!$tableCheck || $tableCheck->num_rows == 0) {
+        return; // ตารางยังไม่มี ไม่ต้องทำอะไร
+    }
     
+    // ตรวจสอบว่ามี foreign key constraint นี้อยู่หรือไม่
+    $dbName = $mysqli->query("SELECT DATABASE()")->fetch_row()[0];
+    $stmt = $mysqli->prepare("
+        SELECT CONSTRAINT_NAME
+        FROM information_schema.TABLE_CONSTRAINTS
+        WHERE TABLE_SCHEMA = ?
+        AND TABLE_NAME = ?
+        AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+        AND CONSTRAINT_NAME = ?
+    ");
+    if (!$stmt) {
+        error_log("Failed to prepare dropForeignKeyIfExists query: " . $mysqli->error);
+        return;
+    }
+    
+    $stmt->bind_param("sss", $dbName, $table, $fkName);
+    if (!$stmt->execute()) {
+        error_log("Failed to execute dropForeignKeyIfExists query: " . $stmt->error);
+        $stmt->close();
+        return;
+    }
+    
+    $result = $stmt->get_result();
+    if ($result && $result->num_rows > 0) {
+        $dropQuery = "ALTER TABLE `$table` DROP FOREIGN KEY `$fkName`";
+        if (!$mysqli->query($dropQuery)) {
+            error_log("Failed to drop foreign key $fkName: " . $mysqli->error);
+        }
+    }
+    
+    $stmt->close();
+}
+
+dropForeignKeyIfExists($mysqli, 'inhomess_assessments', 'fk_inhomess_visit');
+dropForeignKeyIfExists($mysqli, 'inhomess_assessments', 'fk_inhomess_patient');
+
     // แก้ไข column data จาก JSON เป็น LONGTEXT ถ้ายังเป็น JSON อยู่
     $result = $mysqli->query("SHOW COLUMNS FROM `inhomess_assessments` LIKE 'data'");
     if ($result && $result->num_rows > 0) {
