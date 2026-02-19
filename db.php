@@ -1,10 +1,12 @@
+
 <?php
-// db.php - central DB connection and helper
-$DB_HOST = getenv('DB_HOST') ?: 'localhost';
-$DB_PORT = getenv('DB_PORT') ?: '';
-$DB_USER = getenv('DB_USER') ?: 'root';
-$DB_PASS = getenv('DB_PASS') ?: '';
-$DB_NAME = getenv('DB_NAME') ?: 'doctorvisit';
+// รองรับทั้ง local (XAMPP) และ Railway
+
+$DB_HOST = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost';
+$DB_PORT = getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '';
+$DB_USER = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('MYSQLPASSWORD') ?: getenv('DB_PASS') ?: '';
+$DB_NAME = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'doctorvisit';
 
 // เชื่อมต่อ MySQL (ยังไม่เลือก database)
 // หากกำหนด DB_PORT จะใช้พอร์ตนั้นเป็นตัวเชื่อมต่อ
